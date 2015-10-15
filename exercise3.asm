@@ -34,13 +34,13 @@ main:
 	mov r4, #0				;Set 0 to register 4
 	mov	p1, #00000010b		;Set p1 to 00000010
 cycle1:
-	acall ms250				;Call ms250 function and store next address
+	call ms250				;Call ms250 function and store next address
 	inc r4					;Increment register 4 by 1
 	cjne r4, #4, cycle1 	;if register 4 is not equal to 4 small jump to cycle1 (4 times means 1 second)
 	mov r4, #0				;Reset register 4 to 0
 	mov	p1, #00000001b		;Set p1 to 00000001
 cycle2:
-	acall ms250				;Call ms250 function and store next address
+	call ms250				;Call ms250 function and store next address
 	inc r4					;Increment register 4 by 1
 	cjne r4, #3, cycle2		;if register 4 is not equal to 3 small jump to cycle1 (3 times means 750 miliseconds)
 	mov r4, #0				;Reset register 4 to 0

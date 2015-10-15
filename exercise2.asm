@@ -1,8 +1,8 @@
+;Use the same logic of exercise 1, but now you should increment from 0 to 4000000. Remember the 8051 architecture suports
+;only 8-bits operation and this exercise needs a 32-bits number. hint: nested loops
 org 0000h
 ljmp main
 
-;Use the same logic of exercise 1, but now you should increment from 0 to 4000000. Remember the 8051 architecture suports
-;only 8-bits operation and this exercise needs a 32-bits number. hint: nested loops
 org 0030h
 increment:
 	mov r3, #0				;Set register 3 to 0

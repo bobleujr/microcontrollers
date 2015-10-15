@@ -1,7 +1,6 @@
+;The goal is to increment a register to 100 and then decrement it until 0, redo the cycle infinitely
 org 0000h
 ljmp main
-
-;The goal is to increment a register to 100 and then decrement it until 0, redo the cycle infinitely
 org 0030h			
 main:
 	mov r1, #0    				;Set 0 to register 1
