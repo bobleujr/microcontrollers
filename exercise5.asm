@@ -1,7 +1,10 @@
-;When an external interrupt 0 is set by a button placed in p3.2
-;turn on a led placed in p1.0 for 1 second, then turn it off.
-;After this cycle, the user must be able to fire another interruption
-;and again turn on the led.
+;
+ ;Authors: Andre, Cesar, Daniel, Paulo
+ ;When an external interrupt 0 is set by a button placed in p3.2
+ ;turn on a led placed in p1.0 for 1 second, then turn it off.
+ ;After this cycle, the user must be able to fire another interruption
+ ;and again turn on the led.
+;
 org 0000h
 ljmp main
 org 0003h ;int0
@@ -36,7 +39,8 @@ loop:
 	ret
 main:
 	;Set most significant bit (enable all interruptions) and least significant bit (enable extern interrupt 0)
-	mov ie,#10000001b
+	mov ie,#10000001b		
 	setb p1.0				;Turn off led on p1.0
 	setb p3.2				;Set interrupt button
+	setb it0				;Turn interruption by falling edge
 	sjmp $					;idle infinitely

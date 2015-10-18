@@ -1,9 +1,12 @@
-;Every time a button place in p3.2 is pressed the led is turned off
-;and the position in its left is turned on. 
-; 00000001 -> [button 0] -> 00000010 -> [button 0] -> 00000100
-;Therefore, if a button placed in p3.3 is pressed the led is also 
-;turned off and now the position in its right is turned on.
-; 00000100 -> [button 1] -> 00000010 -> [button 1] -> 00000001
+;
+ ;Authors: Andre, Cesar, Daniel, Paulo
+ ;Every time a button place in p3.2 is pressed the led is turned off
+ ;and the position in its left is turned on. 
+ ; 00000001 -> [button 0] -> 00000010 -> [button 0] -> 00000100
+ ;Therefore, if a button placed in p3.3 is pressed the led is also 
+ ;turned off and now the position in its right is turned on.
+ ; 00000100 -> [button 1] -> 00000010 -> [button 1] -> 00000001
+;
 org 0000h
 ljmp main
 org 0003h ;int0
@@ -34,4 +37,6 @@ main:
 	clr p1.0			;Turn on led on p1.0
 	setb p3.2           ;Set interrupt button 0
 	setb p3.3           ;Set interrupt button 1
+	setb it0			;Turn interruption 0 by falling edge
+	setb it1			;Turn interruption 1 by falling edge
 	sjmp $				;idle infinitely
