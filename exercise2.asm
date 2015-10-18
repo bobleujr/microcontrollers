@@ -1,7 +1,10 @@
-;Use the same logic of exercise 1, but now you should increment from 0 to 4000000. Remember the 8051 architecture suports
-;only 8-bits operation and this exercise needs a 32-bits number. hint: nested loops
+;
+ ;Authors: Andre, Cesar, Daniel, Paulo
+ ;Use the same logic of exercise 1, but now you should increment from 0 to 4000000. Remember the 8051 architecture suports
+ ;only 8-bits operation and this exercise needs a 32-bits number. hint: nested loops
+;
 org 0000h
-ljmp main
+ljmp increment
 
 org 0030h
 increment:
@@ -16,7 +19,7 @@ loop1:
 	inc r2					;Increment register 2 by 1
 	cjne r2, #250, resetR1	;If register 2 is not equal to 250 small jupmp to reset1 label
 	inc r3					;Increment register 3 by 1
-	cjne r3, #64, limpaR2	;If register 3 is not equal to 64 small jupmp to reset2 label
+	cjne r3, #64, resetR2	;If register 3 is not equal to 64 small jupmp to reset2 label
 decrement:
 setR2:
 	mov r2, #250			;Set register 2 to 250

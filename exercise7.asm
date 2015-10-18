@@ -1,7 +1,10 @@
-;Same logic as exercise 3, but now using time to delay 1 second and 750 miliseconds instead
-;of nested increments. Note that the timer overflows happens each 50 ms
-;so we used a counter to increment 20 times until something really happens,
-;at least for the human.
+;
+ ;Authors: Andre, Cesar, Daniel, Paulo
+ ;Same logic as exercise 3, but now using time to delay 1 second and 750 miliseconds instead
+ ;of nested increments. Note that the timer overflows happens each 50 ms
+ ;so we used a counter to increment 20 times until something really happens,
+ ;at least for the human.
+;
 org 0000h
 ljmp main
 org 000bh ;timer0

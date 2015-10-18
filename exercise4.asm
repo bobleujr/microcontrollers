@@ -1,7 +1,10 @@
-;A led is connected to each bit in Port 1 and after 250ms a led is
-;turned on from left to right. for example if in state 0 we have this
-;configuration 00000001 after 250ms we have 00000010 and after 250ms 
-;we have 00000100 and so on. This must work infinitely.
+;
+ ;Authors: Andre, Cesar, Daniel, Paulo
+ ;A led is connected to each bit in Port 1 and after 250ms a led is
+ ;turned on from left to right. for example if in state 0 we have this
+ ;configuration 00000001 after 250ms we have 00000010 and after 250ms 
+ ;we have 00000100 and so on. This must work infinitely.
+;
 org 0000h
 ljmp main
 
@@ -22,10 +25,10 @@ loop1:
 	cjne r3, #2, resetR2
 	ret
 main:
-	mov	A, #00000001b	;Move 00000000 to A
-	mov p1, A			;Move A to port P1
+	clr p1.0			;Turn on led connected in port 1.0
 cycle1:
 	call ms250			;Call delay function 
+	mov A, p1			;Move port 1 to A
 	rl A				;Rotate A to left
-	mov p1, A			;Move A to port P1
+	mov p1, A			;Move back A to port P1
 	sjmp cycle1			;Redo cycle infinitely

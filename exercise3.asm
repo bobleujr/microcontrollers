@@ -1,6 +1,9 @@
-;A led is connected to port P1.0 and turned on and another led is connected to port P1.1 and turned off for 1 second.
-;After 1 second, the led connected to port P1.0 is turned off and the led connected to port P1.1 is turned on for 750 miliseconds.
-;Redo the cycle infinitely. hint: nested loops for delay
+;
+ ;Authors: Andre, Cesar, Daniel, Paulo
+ ;A led is connected to port P1.0 and turned on and another led is connected to port P1.1 and turned off for 1 second.
+ ;After 1 second, the led connected to port P1.0 is turned off and the led connected to port P1.1 is turned on for 750 miliseconds.
+ ;Redo the cycle infinitely. hint: nested loops for delay
+;
 org 0000h
 ljmp main
 
@@ -32,19 +35,23 @@ loop1:
 	
 main:
 	mov r4, #0				;Set 0 to register 4
-	mov	p1, #00000010b		;Set p1 to 00000010
+	clr p1.1				;Turn on led on p1.1
 cycle1:
 	call ms250				;Call ms250 function and store next address
 	inc r4					;Increment register 4 by 1
 	cjne r4, #4, cycle1 	;if register 4 is not equal to 4 small jump to cycle1 (4 times means 1 second)
 	mov r4, #0				;Reset register 4 to 0
-	mov	p1, #00000001b		;Set p1 to 00000001
+	mov A,p1				;Move port 1 to A
+	rr A					;Rotate A to the right
+	mov p1, A				;Move back A to port 1
 cycle2:
 	call ms250				;Call ms250 function and store next address
 	inc r4					;Increment register 4 by 1
 	cjne r4, #3, cycle2		;if register 4 is not equal to 3 small jump to cycle1 (3 times means 750 miliseconds)
 	mov r4, #0				;Reset register 4 to 0
-	mov	p1, #00000010b		;Set p1 to 00000010
+	mov A,p1				;Move port 1 to A
+	rl A                    ;Rotate A to the left
+	mov p1, A               ;Move back A to port 1
 	sjmp cycle1				;Redo cycle
 		
 	
