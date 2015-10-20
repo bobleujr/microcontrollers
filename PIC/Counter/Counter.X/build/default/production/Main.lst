@@ -1,4 +1,4 @@
-MPASM 5.63                          MAIN.ASM   10-20-2015  0:20:01         PAGE  1
+MPASM 5.63                          MAIN.ASM   10-20-2015  18:12:24         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -42,111 +42,122 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00026     org     0x0004  
                       00027     
                       00028     ;Store context
-0004   00A4           00029     movwf w_temp        ;Store W in w_temp
-0005   0E03           00030     swapf STATUS,W        
-0006   00A5           00031     movwf status_temp   ;Store Status in status_temp
+                      00029     ;movwf w_temp       ;Store W in w_temp
+                      00030     ;swapf STATUS,W       
+                      00031     ;movwf status_temp  ;Store Status in status_temp
                       00032 
-0007   188B           00033     BTFSC INTCON, INTF  
-0008   2???           00034     call INT_INT        ;External interrupt
-0009   180B           00035     BTFSC INTCON, RBIF
-000A   2???           00036     call INT_RB         ;State change interrupt
+0004   188B           00033     BTFSC INTCON, INTF  
+0005   2???           00034     call INT_INT        ;External interrupt
+0006   180B           00035     BTFSC INTCON, RBIF
+0007   2???           00036     call INT_RB         ;State change interrupt
                       00037 
                       00038     ;Restore context
-000B   0E25           00039     swapf status_temp,W
-000C   0083           00040     movwf STATUS        ;Restore States
-000D   0EA4           00041     swapf w_temp, F
-000E   0E24           00042     swapf w_temp, W     ;Restore W
-000F   0009           00043     retfie                    
-MPASM 5.63                          MAIN.ASM   10-20-2015  0:20:01         PAGE  2
+                      00039     ;swapf status_temp,W
+                      00040     ;movwf STATUS       ;Restore States
+                      00041     ;swapf w_temp, F
+                      00042     ;swapf w_temp, W    ;Restore W
+0008   0009           00043     retfie                    
+MPASM 5.63                          MAIN.ASM   10-20-2015  18:12:24         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00044 ;Every time a button placed in RB0 is pressed, count   
-0010                  00045 INT_INT
-0010   2???           00046     call INCREMENT
-0011   108B           00047     BCF INTCON, INTF    
-0012   0008           00048     return
-0013                  00049 INT_RB
-                      00050     ;Read PORTB
-                      00051     ;Every time a button placed in RB4 is pressed, increment
-                      00052     ;BTFSC PORTB.4
-                      00053     ;call INCREMENT
-                      00054     ;Every time a button placed in RB5 is pressed, decrement
-                      00055     ;BTFSC PORTB.5
-                      00056     ;call DECREMENT
-                      00057     ;Every time a button placed in RB6 is pressed, reset
-                      00058     ;BTFSC PORTB.5
-                      00059     ;call CLEAR
-0013   100B           00060     BCF INTCON, RBIF
-0014   0008           00061     return
+0009                  00045 INT_INT
+0009   1283 1303      00046     BANKSEL INTCON
+000B   108B           00047     BCF INTCON, INTF
+000C   2???           00048     call INCREMENT
+000D   1283 1303      00049     BANKSEL PORTB
+000F   0008           00050     return
+0010                  00051 INT_RB
+0010   1283 1303      00052     BANKSEL PORTB
+0012   1A06           00053     BTFSC PORTB, 4
+0013   2???           00054     call INCREMENT
+0014   1A86           00055     BTFSC PORTB, 5
+0015   2???           00056     call DECREMENT
+0016   1B06           00057     BTFSC PORTB, 6
+0017   2???           00058     call CLEAR
+0018   1283 1303      00059     BANKSEL INTCON
+001A   100B           00060     BCF INTCON, RBIF
+001B   0008           00061     return
                       00062 
-0015                  00063 DECREMENT
-0015   03A0           00064     DECF    counter, F      ;Decrement master counter until 0
-0016   1D03           00065     BTFSS   STATUS, Z       ;If master counter not reaches 0, skip next address
-0017   2???           00066     goto    CLEAR           ;Clear all counters
-0018   03A3           00067     DECF    counter3, F     ;Decrement least significant counter until 0
-0019   30FF           00068     MOVLW   D'255'          
-001A   0223           00069     SUBWF   counter3, W     
-001B   1D03           00070     BTFSS   STATUS, Z       ;If counter3 is equal to 255 skip next address
-001C   0008           00071     return                  ;Otherwise, return
-001D   3009           00072     MOVLW   D'9'
-001E   0223           00073     SUBWF   counter3, W     ;Set counter3 to 9
-001F   03A2           00074     DECF    counter2, F     ;Decrement middle counter until 10
-0020   30FF           00075     MOVLW   D'255'          
-0021   0222           00076     SUBWF   counter2, W     
-0022   1D03           00077     BTFSS   STATUS, Z       ;If counter2 is equal to 255 skip next address
-0023   0008           00078     return                  ;Otherwise, return
-0024   3009           00079     MOVLW   D'9'
-0025   0222           00080     SUBWF   counter2, W     ;Set counter2 to 9
-0026   03A1           00081     DECF    counter1, F     ;Decrement most significant counter until 0
-0027   0008           00082     return                  ;return
-0028                  00083 INCREMENT
-0028   0AA0           00084     INCF    counter, F      ;Increment master counter until 255
-0029   1D03           00085     BTFSS   STATUS, Z       ;If caused overflow in master counter
-002A   2???           00086     goto    CLEAR           ;Clear all counters
-002B   0AA3           00087     INCF    counter3, F     ;Increment least significant counter until 10
-002C   300A           00088     MOVLW   D'10'           
-002D   0223           00089     SUBWF   counter3, W     
-002E   1D03           00090     BTFSS   STATUS, Z       ;If counter3 is equal to 10 skip next address
-002F   0008           00091     return                  ;Otherwise, return
-0030   01A3           00092     CLRF    counter3        ;Reset counter3
-0031   0AA2           00093     INCF    counter2, F     ;Increment middle counter until 10
-0032   300A           00094     MOVLW   D'10'           
-0033   0222           00095     SUBWF   counter2, W     
-0034   1D03           00096     BTFSS   STATUS, Z       ;If counter2 is equal to 10 skip next address
-MPASM 5.63                          MAIN.ASM   10-20-2015  0:20:01         PAGE  3
+001C                  00063 DECREMENT
+001C   3000           00064     MOVLW   D'0'
+001D   0720           00065     ADDWF   counter, W
+001E   1903           00066     BTFSC   STATUS, Z
+001F   2???           00067     GOTO    DEMACIA         ;Charge all counters
+0020   03A0           00068     DECF    counter, F      ;Decrement master counter until 0
+0021   03A3           00069     DECF    counter3, F     ;Decrement least significant counter until 0
+0022   30FF           00070     MOVLW   D'255'          
+0023   0223           00071     SUBWF   counter3, W     
+0024   1D03           00072     BTFSS   STATUS, Z       ;If counter3 is equal to 255 skip next address
+0025   0008           00073     return                  ;Otherwise, return
+0026   3009           00074     MOVLW   D'9'
+0027   00A3           00075     MOVWF   counter3        ;Set counter3 to 9
+0028   03A2           00076     DECF    counter2, F     ;Decrement middle counter until 10
+0029   30FF           00077     MOVLW   D'255'          
+002A   0222           00078     SUBWF   counter2, W     
+002B   1D03           00079     BTFSS   STATUS, Z       ;If counter2 is equal to 255 skip next address
+002C   0008           00080     return                  ;Otherwise, return
+002D   3009           00081     MOVLW   D'9'
+002E   00A2           00082     MOVWF   counter2        ;Set counter2 to 9
+002F   03A1           00083     DECF    counter1, F     ;Decrement most significant counter until 0
+0030   0008           00084     return                  ;return
+0031                  00085 INCREMENT
+0031   0AA0           00086     INCF    counter, F      ;Increment master counter until 255
+0032   1903           00087     BTFSC   STATUS, Z       ;If caused overflow in master counter
+0033   2???           00088     goto    CLEAR           ;Clear all counters
+0034   0AA3           00089     INCF    counter3, F     ;Increment least significant counter until 10
+0035   300A           00090     MOVLW   D'10'           
+0036   0223           00091     SUBWF   counter3, W     
+0037   1D03           00092     BTFSS   STATUS, Z       ;If counter3 is equal to 10 skip next address
+0038   0008           00093     return                  ;Otherwise, return
+0039   01A3           00094     CLRF    counter3        ;Reset counter3
+003A   0AA2           00095     INCF    counter2, F     ;Increment middle counter until 10
+003B   300A           00096     MOVLW   D'10'           
+MPASM 5.63                          MAIN.ASM   10-20-2015  18:12:24         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0035   0008           00097     return                  ;Otherwise, return
-0036   01A2           00098     CLRF    counter2        ;Reset counter2
-0037   0AA1           00099     INCF    counter1, F     ;Increment most significant counter
-0038   0008           00100     return                  ;return
-0039                  00101 CLEAR
-0039   01A0           00102     CLRF counter            ;Reset all counters
-003A   01A1           00103     CLRF counter1           
-003B   01A2           00104     CLRF counter2
-003C   01A3           00105     CLRF counter3
-003D   0008           00106     return                  ;return
-                      00107     
-003E                  00108 SETUP    
-003E   1283 1303      00109     BANKSEL INTCON
-0040   178B           00110     BSF INTCON, GIE
-0041   160B           00111     BSF INTCON, INTE
-0042   158B           00112     BSF INTCON, RBIE
-0043   01A0           00113     CLRF counter
-0044   01A1           00114     CLRF counter1
-0045   01A2           00115     CLRF counter2
-0046   01A3           00116     CLRF counter3
-                      00117    
-0047                  00118 MAIN
-0047   2???           00119     goto $
-3F72                  00120     end
-MPASM 5.63                          MAIN.ASM   10-20-2015  0:20:01         PAGE  4
+003C   0222           00097     SUBWF   counter2, W     
+003D   1D03           00098     BTFSS   STATUS, Z       ;If counter2 is equal to 10 skip next address
+003E   0008           00099     return                  ;Otherwise, return
+003F   01A2           00100     CLRF    counter2        ;Reset counter2
+0040   0AA1           00101     INCF    counter1, F     ;Increment most significant counter
+0041   0008           00102     return                  ;return
+0042                  00103 CLEAR
+0042   01A0           00104     CLRF counter            ;Reset all counters
+0043   01A1           00105     CLRF counter1           
+0044   01A2           00106     CLRF counter2
+0045   01A3           00107     CLRF counter3
+0046   0008           00108     return                  ;return
+0047                  00109 DEMACIA
+0047   30FF           00110     MOVLW D'255'
+0048   00A0           00111     MOVWF counter
+0049   3002           00112     MOVLW D'2'
+004A   00A1           00113     MOVWF counter1
+004B   3005           00114     MOVLW D'5'
+004C   00A2           00115     MOVWF counter2
+004D   3005           00116     MOVLW D'5'
+004E   00A3           00117     MOVWF counter3
+004F   0008           00118     return                  ;return
+0050                  00119 SETUP    
+0050   1283 1303      00120     BANKSEL INTCON
+0052   178B           00121     BSF INTCON, GIE
+0053   160B           00122     BSF INTCON, INTE
+0054   158B           00123     BSF INTCON, RBIE
+0055   01A0           00124     CLRF counter
+0056   01A1           00125     CLRF counter1
+0057   01A2           00126     CLRF counter2
+0058   01A3           00127     CLRF counter3
+                      00128     
+0059                  00129 MAIN
+0059   2???           00130     goto $
+3F72                  00131     end
+MPASM 5.63                          MAIN.ASM   10-20-2015  18:12:24         PAGE  4
 
 
 SYMBOL TABLE
@@ -205,14 +216,14 @@ CHS1                              00000004
 CHS2                              00000005
 CIS                               00000003
 CKE                               00000006
-MPASM 5.63                          MAIN.ASM   10-20-2015  0:20:01         PAGE  5
+MPASM 5.63                          MAIN.ASM   10-20-2015  18:12:24         PAGE  5
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
 CKP                               00000004
-CLEAR                             00000039
+CLEAR                             00000042
 CM0                               00000000
 CM1                               00000001
 CM2                               00000002
@@ -232,7 +243,8 @@ CVRR                              00000005
 D                                 00000005
 DATA_ADDRESS                      00000005
 DC                                00000001
-DECREMENT                         00000015
+DECREMENT                         0000001C
+DEMACIA                           00000047
 D_A                               00000005
 D_NOT_A                           00000005
 EEADR                             0000010D
@@ -258,22 +270,22 @@ I2C_START                         00000003
 I2C_STOP                          00000004
 IBF                               00000007
 IBOV                              00000005
-INCREMENT                         00000028
+INCREMENT                         00000031
 INDF                              00000000
 INTCON                            0000000B
 INTE                              00000004
 INTEDG                            00000006
-INTF                              00000001
-MPASM 5.63                          MAIN.ASM   10-20-2015  0:20:01         PAGE  6
+MPASM 5.63                          MAIN.ASM   10-20-2015  18:12:24         PAGE  6
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-INT_INT                           00000010
-INT_RB                            00000013
+INTF                              00000001
+INT_INT                           00000009
+INT_RB                            00000010
 IRP                               00000007
-MAIN                              00000047
+MAIN                              00000059
 NOT_A                             00000005
 NOT_ADDRESS                       00000005
 NOT_BO                            00000000
@@ -322,13 +334,13 @@ R                                 00000002
 RA0                               00000000
 RA1                               00000001
 RA2                               00000002
-RA3                               00000003
-MPASM 5.63                          MAIN.ASM   10-20-2015  0:20:01         PAGE  7
+MPASM 5.63                          MAIN.ASM   10-20-2015  18:12:24         PAGE  7
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RA3                               00000003
 RA4                               00000004
 RA5                               00000005
 RB0                               00000000
@@ -379,15 +391,15 @@ R_NOT_W                           00000002
 R_W                               00000002
 S                                 00000003
 SEN                               00000000
-SETUP                             0000003E
+SETUP                             00000050
 SMP                               00000007
-SPBRG                             00000099
-MPASM 5.63                          MAIN.ASM   10-20-2015  0:20:01         PAGE  8
+MPASM 5.63                          MAIN.ASM   10-20-2015  18:12:24         PAGE  8
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+SPBRG                             00000099
 SPEN                              00000007
 SREN                              00000005
 SSPADD                            00000093
@@ -440,13 +452,13 @@ TRISA                             00000085
 TRISA0                            00000000
 TRISA1                            00000001
 TRISA2                            00000002
-TRISA3                            00000003
-MPASM 5.63                          MAIN.ASM   10-20-2015  0:20:01         PAGE  9
+MPASM 5.63                          MAIN.ASM   10-20-2015  18:12:24         PAGE  9
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+TRISA3                            00000003
 TRISA4                            00000004
 TRISA5                            00000005
 TRISB                             00000086
@@ -497,15 +509,15 @@ WR                                00000001
 WREN                              00000002
 WRERR                             00000003
 Z                                 00000002
-_.org_1_0047                      00000047
+_.org_1_0059                      00000059
 _BODEN_OFF                        00003FBF
-_BODEN_ON                         00003FFF
-MPASM 5.63                          MAIN.ASM   10-20-2015  0:20:01         PAGE 10
+MPASM 5.63                          MAIN.ASM   10-20-2015  18:12:24         PAGE 10
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+_BODEN_ON                         00003FFF
 _BOREN_OFF                        00003FBF
 _BOREN_ON                         00003FFF
 _CONFIG                           00002007

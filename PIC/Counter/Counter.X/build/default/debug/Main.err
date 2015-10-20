@@ -1,3 +1,0 @@
-Warning[205] C:\USERS\ANDRE\DOCUMENTS\GITHUB\MICROCONTROLLERS\PIC\COUNTER\COUNTER.X\MAIN.ASM 11 : Found directive in column 1. (cblock)
-Message[302] C:\USERS\ANDRE\DOCUMENTS\GITHUB\MICROCONTROLLERS\PIC\COUNTER\COUNTER.X\MAIN.ASM 49 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\ANDRE\DOCUMENTS\GITHUB\MICROCONTROLLERS\PIC\COUNTER\COUNTER.X\MAIN.ASM 50 : Register in operand not in bank 0.  Ensure that bank bits are correct.
