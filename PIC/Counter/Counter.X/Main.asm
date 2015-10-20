@@ -34,7 +34,7 @@
     BTFSC   INTCON, RBIF
     call    INT_RB	    ;State change interrupt
 
-    Restore context
+    ;Restore context
     swapf   status_temp,W
     movwf   STATUS	    ;Restore States
     swapf   w_temp, F
@@ -115,15 +115,49 @@ DEMACIA
     MOVLW   D'5'
     MOVWF   counter3
     return		    ;return
+DISPLAY
+    BANKSEL PORTB	    ;Select bank where PORTB is
+    BCF	    PORTB, 1	    
+    BCF	    PORTB, 2	    
+    BSF	    PORTB, 3	    ;Set PORTB.3 to send to display3 
+    MOVLW   B'00000000'
+    IORWF   counter3, W	    ;Set counter3 to W in binary
+    BANKSEL PORTC	    ;Select bank where PORTC is
+    MOVWF   PORTC	    ;Set W to PORTC
+    BANKSEL PORTB	    ;Select bank where PORTB is
+    BCF	    PORTB, 1
+    BSF	    PORTB, 2	    ;Set PORTB.2 to send to display2
+    BCF	    PORTB, 3
+    MOVLW   B'00000000'
+    IORWF   counter2, W
+    BANKSEL PORTC	    ;Select bank where PORTC is
+    MOVWF   PORTC	    ;Set W to PORTC
+    BANKSEL PORTB	    ;Select bank where PORTB is
+    BSF	    PORTB, 1	    ;Set PORTB.2 to send to display1
+    BCF	    PORTB, 2
+    BCF	    PORTB, 3
+    MOVLW   B'00000000'
+    IORWF   counter1, W
+    BANKSEL PORTC	    ;Select bank where PORTC is
+    MOVWF   PORTC	    ;Set W to PORTC
+    return		    ;Return
 SETUP    
-    BANKSEL INTCON
-    BSF	    INTCON, GIE
-    BSF	    INTCON, INTE
-    BSF	    INTCON, RBIE
-    CLRF    counter
-    CLRF    counter1
-    CLRF    counter2
-    CLRF    counter3
+    BANKSEL INTCON	    ;Select bank where INTCON is
+    BSF	    INTCON, GIE	    ;Enable interruptions
+    BSF	    INTCON, INTE    ;Enable extern interruption
+    BSF	    INTCON, RBIE    ;Enable state change interruption
+    CLRF    counter	    ;Clear master counter
+    CLRF    counter1	    ;Clear counter1
+    CLRF    counter2	    ;Clear counter2
+    CLRF    counter3	    ;Clear counter3
+    BANKSEL TRISC	    
+    MOVLW   B'00000000'	    ;Set PORTC as output
+    MOVWF   TRISC
+    BANKSEL PORTB	    
+    BCF	    PORTB, 1	    ;Clear PORTB.1
+    BCF	    PORTB, 2	    ;Clear PORTB.2
+    BCF	    PORTB, 3	    ;Clear PORTB.3
 MAIN
-    goto $
+    call DISPLAY	    ;Call display function
+    goto MAIN		    
     end
